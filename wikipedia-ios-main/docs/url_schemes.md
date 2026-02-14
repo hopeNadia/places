@@ -10,5 +10,5 @@ The URL scheme is `wikipedia://`. The following URLs are currently handled:
 | Explore            | wikipedia://explore                      |                                          |
 | History            | wikipedia://history                      |                                          |
 | Places             | wikipedia://places[?WMFArticleURL=]      | wikipedia://places/?WMFArticleURL=https://en.wikipedia.org/wiki/Dallas
-                                         |
+| Places: specific location           | wikipedia://location[?latitude=&longitude=] | wikipedia://location?latitude=52.3547498&longitude=4.8339215 |   
 | Saved pages        | wikipedia://saved                        |                                          |

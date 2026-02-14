@@ -77,20 +77,21 @@ __attribute__((annotate("returns_localized_nsstring"))) static inline NSString *
 + (instancetype)wmf_locationActivityWithURL:(NSURL *)activityURL {
     NSURLComponents *components = [NSURLComponents componentsWithURL:activityURL resolvingAgainstBaseURL:NO];
     NSUserActivity *activity = [self wmf_pageActivityWithName:@"Location"];
-    NSMutableDictionary *userInfo = [activity.userInfo mutableCopy];
+    NSNumber *latitude = nil;
+    NSNumber *longitude = nil;
     
     for (NSURLQueryItem *item in components.queryItems) {
         if ([item.name isEqualToString:@"latitude"]) {
-            NSNumber *latitude = @([item.value doubleValue]);
-            userInfo[@"latitude"] = latitude;
+            latitude = @([item.value doubleValue]);
         } else if ([item.name isEqualToString:@"longitude"]) {
-            NSNumber *longitude = @([item.value doubleValue]);
-            userInfo[@"longitude"] = longitude;
+            longitude = @([item.value doubleValue]);
         }
     }
     
-    activity.userInfo = [userInfo copy];
-    
+    if (latitude && longitude) {
+        [activity addUserInfoEntriesFromDictionary:@{@"latitude": latitude, @"longitude": longitude}];
+    }
+
     return activity;
 }
 
@@ -314,6 +315,9 @@ __attribute__((annotate("returns_localized_nsstring"))) static inline NSString *
             break;
         case WMFUserActivityTypePlaces:
             host = @"places";
+            break;
+        case WMFUserActivityTypeLocation:
+            host = @"location";
             break;
         case WMFUserActivityTypeExplore:
         default:
