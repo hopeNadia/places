@@ -9,14 +9,6 @@ enum ViewState {
 
 @MainActor
 class LocationsViewModel: ObservableObject {
-    private lazy var numberFormatter: NumberFormatter = ({
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .decimal
-        formatter.locale = Locale.current
-        
-        return formatter
-    })()
-    
     private let locationService: LocationServiceProtocol
     private let urlService: UrlServiceProtocol
     
@@ -27,11 +19,11 @@ class LocationsViewModel: ObservableObject {
     @Published var longitudeInput: String = ""
 
     private var latInputNumber: Double? {
-        numberFormatter.number(from: latitudeInput) as? Double
+        NumberFormatter.decimalWithLocale.number(from: latitudeInput) as? Double
     }
     
     private var longInputNumber: Double? {
-        numberFormatter.number(from: longitudeInput) as? Double
+        NumberFormatter.decimalWithLocale.number(from: longitudeInput) as? Double
     }
     
     var isValidCoordinates: Bool {
