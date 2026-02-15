@@ -13,15 +13,13 @@ struct LocationsListView: View {
             Text("Select location and read more about it in Wiki!")
                 .font(.headline)
             
-            VStack(spacing: .zero) {
-                switch viewModel.viewState {
-                case .loading:
-                    loadingView
-                case .idle:
-                    listView
-                case .error:
-                    errorView
-                }
+            switch viewModel.viewState {
+            case .loading:
+                loadingView
+            case .idle:
+                listView
+            case .error:
+                errorView
             }
         }
         .padding(16)
@@ -46,21 +44,23 @@ struct LocationsListView: View {
     }
     
     private var listView: some View {
-        ScrollView {
-            if let locations = viewModel.locations, !locations.isEmpty {
-                LazyVStack(spacing: 12) {
-                    ForEach(locations) { location in
-                        LocationItem(
-                            location: location,
-                            onLocationTap: viewModel.onLocationTap
-                        )
+        VStack(spacing: .zero) {
+            ScrollView {
+                if let locations = viewModel.locations, !locations.isEmpty {
+                    LazyVStack(spacing: 12) {
+                        ForEach(locations) { location in
+                            LocationItemView(
+                                location: location,
+                                onLocationTap: viewModel.onLocationTap
+                            )
+                        }
                     }
+                } else {
+                    emptyListView
                 }
-            } else {
-                emptyListView
             }
+            .refreshable(action: viewModel.onRefresh)
         }
-        .refreshable(action: viewModel.onRefresh)
     }
     
     private var emptyListView: some View {

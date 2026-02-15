@@ -1,10 +1,13 @@
 import SwiftUI
 
-struct LocationItem: View {
+struct LocationItemView: View {
     private let location: Location
     private let onLocationTap: (_ location: Location) -> Void
     
-    public init(location: Location, onLocationTap: @escaping (_: Location) -> Void) {
+    public init(
+        location: Location,
+        onLocationTap: @escaping (_ location: Location) -> Void
+    ) {
         self.location = location
         self.onLocationTap = onLocationTap
     }

@@ -6,26 +6,29 @@ struct CoordinatesForm: View {
     
     var body: some View {
         VStack {
-            HStack {
+            HStack(spacing: .zero) {
                 Spacer(minLength: 12)
-                Button(role: .close, action: {dismiss()})
+                Button(role: .close, action: { dismiss() })
             }
             
             Form {
-                Section(header:
-                            Text("Search by coordinates")
-                    .font(.title)
-                    .foregroundStyle(.black)
+                Section(
+                    header: Text("Search by coordinates")
+                        .font(.title)
+                        .foregroundStyle(.black)
                 ) {
                     VStack(alignment: .leading, spacing: 6) {
                         Text("Latitude")
                             .font(.caption)
                             .foregroundStyle(.primary)
                         
-                        TextField("Example: 40,7128", text: $viewModel.latitudeInput)
-                            .keyboardType(.numbersAndPunctuation)
-                            .accessibilityLabel("Latitude")
-                            .accessibilityHint("Enter a decimal number between minus 90 and 90")
+                        TextField(
+                            "Example: 40,7128",
+                            text: $viewModel.latitudeInput
+                        )
+                        .keyboardType(.numbersAndPunctuation)
+                        .accessibilityLabel("Latitude")
+                        .accessibilityHint("Enter a decimal number between minus 90 and 90")
                     }
                     
                     VStack(alignment: .leading, spacing: 6) {
@@ -33,14 +36,17 @@ struct CoordinatesForm: View {
                             .font(.caption)
                             .foregroundStyle(.primary)
                         
-                        TextField("Example: -74,0060", text: $viewModel.longitudeInput)
-                            .keyboardType(.numbersAndPunctuation)
-                            .accessibilityLabel("Longitude")
-                            .accessibilityHint("Enter a decimal number between minus 180 and 180")
+                        TextField(
+                            "Example: -74,0060",
+                            text: $viewModel.longitudeInput
+                        )
+                        .keyboardType(.numbersAndPunctuation)
+                        .accessibilityLabel("Longitude")
+                        .accessibilityHint("Enter a decimal number between minus 180 and 180")
                     }
                     
                     if viewModel.isInputErrorVisible {
-                        Text("Invalid coordinates. Use decimal numbers, for example 40,7128.")
+                        Text("Invalid coordinates. Use decimal numbers, for example 40,7128")
                             .font(.caption)
                             .foregroundStyle(.red)
                             .accessibilityLabel("Error. Invalid coordinates.")

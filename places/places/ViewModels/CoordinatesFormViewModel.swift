@@ -11,11 +11,11 @@ class CoordinatesFormViewModel: ObservableObject, Identifiable {
     @Published var longitudeInput: String = ""
 
     private var latInputNumber: Double? {
-        NumberFormatter.decimalWithLocale.number(from: latitudeInput) as? Double
+        NumberFormatter.decimalWithLocale.number(from: latitudeInput)?.doubleValue
     }
     
     private var longInputNumber: Double? {
-        NumberFormatter.decimalWithLocale.number(from: longitudeInput) as? Double
+        NumberFormatter.decimalWithLocale.number(from: longitudeInput)?.doubleValue
     }
     
     var isValidCoordinates: Bool {
