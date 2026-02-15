@@ -6,6 +6,11 @@ protocol UrlServiceProtocol {
 
 class UrlService: UrlServiceProtocol {
     func getWikiUrl(lat: Double, long: Double) -> URL? {
-        return URL(string:"wikipedia://location?latitude=\(lat)&longitude=\(long)")
+        let url = URL(string: "wikipedia://location")
+        let queryItems: [URLQueryItem] = [
+            URLQueryItem(name: "latitude", value: "\(lat)"),
+            URLQueryItem(name: "longitude", value: "\(long)")
+        ]
+        return url?.appending(queryItems: queryItems)
     }
 }

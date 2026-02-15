@@ -1,26 +1,19 @@
 import SwiftUI
-struct LocationListView: View {
+
+struct LocationsListView: View {
     @StateObject var viewModel: LocationsViewModel
-    @State private var showCustomLocation = false
-    
+
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 12) {
-                Text("Places")
-                    .font(.headline)
-                Text("Enter coordinates and search it in Wiki!")
-                    .font(.headline)
-                
-                customSearchButtonView
-                if showCustomLocation {
-                    customLocationView
-                        .transition(.opacity.combined(with: .move(edge: .trailing)))
-                }
-                
-                // Location selector here
-                
-                Text("Or \nSelect location and read more about it in Wiki!")
-                    .font(.headline)
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Enter coordinates and search it in Wiki!")
+                .font(.headline)
+            
+            coordinatesFormButtonView
+            
+            Text("Select location and read more about it in Wiki!")
+                .font(.headline)
+            
+            VStack(spacing: .zero) {
                 switch viewModel.viewState {
                 case .loading:
                     loadingView
@@ -31,93 +24,43 @@ struct LocationListView: View {
                 }
             }
         }
-        .refreshable {
-            viewModel.onRefresh()
-        }
-        .onAppear(perform: viewModel.onAppear)
-        .onTapGesture {
-            UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
-        }
-    }
-    
-    private var customSearchButtonView: some View {
-        Button(action: {
-            withAnimation(.easeInOut(duration: 0.2)) {
-                showCustomLocation.toggle()
-            }}) {
-            HStack {
-                Image(systemName: showCustomLocation ? "chevron.up" : "chevron.down")
-                    .rotationEffect(.degrees(showCustomLocation ? 0 : -90))
-                Text("Search by Coordinates")
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(12)
-            .background(Color(.systemGray6))
-            .foregroundColor(.primary)
-            .cornerRadius(8)
-        }
-    }
-    
-    private var customLocationView: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text("Search by coordinates")
-                .font(.subheadline)
-                .fontWeight(.semibold)
-            
-            VStack(alignment: .leading, spacing: 4) {
-                Text("Latitude")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-                TextField("Lat", text: $viewModel.latitudeInput)
-                    .textFieldStyle(.roundedBorder)
-                    .keyboardType(.numbersAndPunctuation)
-                    .accessibilityLabel("Latitude input field")
-            }
-            
-            VStack(alignment: .leading, spacing: 4) {
-                Text("Longitude")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-                TextField("Long", text: $viewModel.longitudeInput)
-                    .textFieldStyle(.roundedBorder)
-                    .keyboardType(.numbersAndPunctuation)
-                    .accessibilityLabel("Longitude input field")
-            }
-            
-            Button(action: viewModel.onCustomCoorinatesSubmit) {
-                Text("Search in Wikipedia")
-            }
-            .frame(maxWidth: .infinity)
-            .buttonStyle(.borderedProminent)
-            .disabled(!viewModel.isValidCoordinates)
-            .accessibilityLabel("Open Wikipedia for coordinates")
-            
-            if viewModel.isInputErrorVisible {
-                Text("Invalid coordinates. Enter each coordinate as a number with decimal point (e.g., 40,7128)")
-                    .font(.caption)
-                    .foregroundColor(.red)
-                    .accessibilityLabel("Error: Enter coordinates as numbers with decimal points")
-            }
-        }
         .padding(16)
-        .background(Color(.systemGray6))
-        .cornerRadius(12)
+        .navigationTitle("Places")
+        .navigationBarTitleDisplayMode(.inline)
+        .onAppear(perform: viewModel.onAppear)
+        .sheet(item: $viewModel.coordinatesFormViewModel) {
+            CoordinatesForm(
+                viewModel: $0
+            )
+        }
+    }
+    
+    private var coordinatesFormButtonView: some View {
+        Button(
+            action: viewModel.onShowFormTap
+        ) {
+            Text("Search by Coordinates")
+        }
+        .buttonStyle(.borderedProminent)
+        .accessibilityLabel("Open search by coordinates form.")
     }
     
     private var listView: some View {
-            Group {
-                if let locations = viewModel.locations, !locations.isEmpty {
-                    LazyVStack(spacing: 12) {
-                        ForEach(locations) { location in
-                            locationCard(location: location)
-                        }
+        ScrollView {
+            if let locations = viewModel.locations, !locations.isEmpty {
+                LazyVStack(spacing: 12) {
+                    ForEach(locations) { location in
+                        LocationItem(
+                            location: location,
+                            onLocationTap: viewModel.onLocationTap
+                        )
                     }
-                    .padding(16)
-                } else {
-                    emptyListView
                 }
+            } else {
+                emptyListView
             }
-           
+        }
+        .refreshable(action: viewModel.onRefresh)
     }
     
     private var emptyListView: some View {
@@ -126,7 +69,7 @@ struct LocationListView: View {
                 .font(.system(size: 48))
                 .foregroundColor(.gray)
                 .accessibilityHidden(true)
-            Text("No locations for today")
+            Text("No locations")
                 .font(.headline)
             Text("Please try later!")
                 .font(.subheadline)
@@ -134,37 +77,7 @@ struct LocationListView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
     }
-    
-    @ViewBuilder
-    private func locationCard(location:Location) -> some View {
-        Button(action: {
-            viewModel.onLocationTap(location: location)
-        }) {
-            VStack(alignment: .leading, spacing: 8) {
-                Text(location.name ?? "Surprise location")
-                    .font(.headline)
-                    .foregroundColor(.primary)
-                
-                HStack(spacing: 4) {
-                    Image(systemName: "location.fill")
-                        .foregroundColor(.blue)
-                        .font(.caption)
-                        .accessibilityHidden(true)
-                    
-                    Text("Lat: \(String(format: "%.2f", location.lat)), Long: \(String(format: "%.2f", location.long))")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                }
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(16)
-            .background(Color(.systemGray6))
-            .cornerRadius(12)
-        }
-        .accessibilityElement(children: .combine)
-        .accessibilityLabel("Location: \(location.name ?? "Surprise location")")
-    }
-    
+
     private var errorView: some View {
         VStack(spacing: 16) {
             Image(systemName: "exclamationmark.triangle.fill")
@@ -198,6 +111,7 @@ struct LocationListView: View {
         VStack(spacing: 16) {
             ProgressView()
                 .scaleEffect(1.5, anchor: .center)
+                .accessibilityHidden(true)
             
             Text("Loading places...")
                 .font(.subheadline)

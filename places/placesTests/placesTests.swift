@@ -1,10 +1,3 @@
-//
-//  placesTests.swift
-//  placesTests
-//
-//  Created by Nadia Ivanovskaya on 14.02.26.
-//
-
 import XCTest
 @testable import places
 

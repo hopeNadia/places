@@ -11,39 +11,20 @@ enum ViewState {
 class LocationsViewModel: ObservableObject {
     private let locationService: LocationServiceProtocol
     private let urlService: UrlServiceProtocol
+    private let urlOpener: URLOpenerServiceProtocol
     
+    @Published var coordinatesFormViewModel: CoordinatesFormViewModel?
     @Published var locations: [Location]?
     @Published var viewState: ViewState = .idle
-    
-    @Published var latitudeInput: String = ""
-    @Published var longitudeInput: String = ""
 
-    private var latInputNumber: Double? {
-        NumberFormatter.decimalWithLocale.number(from: latitudeInput) as? Double
-    }
-    
-    private var longInputNumber: Double? {
-        NumberFormatter.decimalWithLocale.number(from: longitudeInput) as? Double
-    }
-    
-    var isValidCoordinates: Bool {
-        guard let latInputNumber, let longInputNumber  else {
-            return false
-        }
-
-        return CLLocationCoordinate2DIsValid(CLLocationCoordinate2D(latitude: latInputNumber, longitude: longInputNumber))
-    }
-    
-    var isInputErrorVisible: Bool {
-        !isValidCoordinates && !latitudeInput.isEmpty && !longitudeInput.isEmpty
-    }
-    
     init(
         locationService: LocationServiceProtocol,
-        urlService: UrlServiceProtocol
+        urlService: UrlServiceProtocol,
+        urlOpener: URLOpenerServiceProtocol
     ) {
         self.locationService = locationService
         self.urlService = urlService
+        self.urlOpener = urlOpener
     }
     
     func onAppear() {
@@ -54,14 +35,11 @@ class LocationsViewModel: ObservableObject {
         getLocations()
     }
     
-    func onCustomCoorinatesSubmit() {
-        guard let latInputNumber,
-                let longInputNumber,
-                let url = urlService.getWikiUrl(lat: latInputNumber, long: longInputNumber) else {
-            return
-        }
-        
-        UIApplication.shared.open(url)
+    func onShowFormTap() {
+        coordinatesFormViewModel = .init(
+            urlService: DependencyContainer.shared.resolve(UrlServiceProtocol.self),
+            urlOpener: DependencyContainer.shared.resolve(URLOpenerServiceProtocol.self)
+        )
     }
     
     func onLocationTap(location: Location) {
@@ -69,7 +47,7 @@ class LocationsViewModel: ObservableObject {
             return
         }
         
-        UIApplication.shared.open(url)
+        urlOpener.open(url)
     }
     
     private func getLocations() {
@@ -79,7 +57,6 @@ class LocationsViewModel: ObservableObject {
                 locations = try await locationService.getLocations()
                 viewState = .idle
             } catch {
-                print(error)
                 viewState = .error
             }
         }
