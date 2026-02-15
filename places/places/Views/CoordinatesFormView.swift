@@ -68,5 +68,6 @@ struct CoordinatesForm: View {
         }
         .padding(16)
         .background(Color(.systemGroupedBackground))
+        .errorAlert(error: $viewModel.alertError)
     }
 }

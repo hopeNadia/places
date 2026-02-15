@@ -13,6 +13,7 @@ class LocationsViewModel: ObservableObject {
     private let urlService: UrlServiceProtocol
     private let urlOpener: URLOpenerServiceProtocol
     
+    @Published var alertError: Error?
     @Published var coordinatesFormViewModel: CoordinatesFormViewModel?
     @Published var locations: [Location]?
     @Published var viewState: ViewState = .idle
@@ -47,7 +48,11 @@ class LocationsViewModel: ObservableObject {
             return
         }
         
-        urlOpener.open(url)
+        do {
+            try urlOpener.open(url)
+        } catch {
+            alertError = error
+        }
     }
     
     private func getLocations() {

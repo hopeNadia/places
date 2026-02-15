@@ -7,6 +7,7 @@ class CoordinatesFormViewModel: ObservableObject, Identifiable {
     private let urlService: UrlServiceProtocol
     private let urlOpener: URLOpenerServiceProtocol
     
+    @Published var alertError: Error?
     @Published var latitudeInput: String = ""
     @Published var longitudeInput: String = ""
 
@@ -45,6 +46,10 @@ class CoordinatesFormViewModel: ObservableObject, Identifiable {
             return
         }
         
-        urlOpener.open(url)
+        do {
+            try urlOpener.open(url)
+        } catch {
+            alertError = error
+        }
     }
 }

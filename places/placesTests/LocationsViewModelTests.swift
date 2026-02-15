@@ -83,4 +83,14 @@ final class LocationViewModelTests: XCTestCase {
         
         XCTAssertNil(urlOpener.openedUrl)
     }
+    
+    func test_showErrorIfWrongUrl() {
+        let location = Location.mock1
+        urlOpener.isError = true
+        
+        viewModel.onLocationTap(location: location)
+        
+        XCTAssertNil(urlOpener.openedUrl)
+        XCTAssertNotNil(viewModel.alertError)
+    }
 }

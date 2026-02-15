@@ -77,4 +77,15 @@ class CoordinatesFormViewModelTests: XCTestCase {
         
         XCTAssertNil(urlOpener.openedUrl)
     }
+    
+    func test_showErrorIfWrongUrl() {
+        viewModel.latitudeInput = "10"
+        viewModel.longitudeInput = "20"
+        urlOpener.isError = true
+        
+        viewModel.onCustomCoorinatesSubmit()
+        
+        XCTAssertNil(urlOpener.openedUrl)
+        XCTAssertNotNil(viewModel.alertError)
+    }
 }

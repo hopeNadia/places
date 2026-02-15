@@ -31,6 +31,7 @@ struct LocationsListView: View {
                 viewModel: $0
             )
         }
+        .errorAlert(error: $viewModel.alertError)
     }
     
     private var coordinatesFormButtonView: some View {

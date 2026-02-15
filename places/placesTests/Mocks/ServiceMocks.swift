@@ -24,9 +24,13 @@ class LocationServiceMock: LocationServiceProtocol {
 }
 
 class URLOpenerServiceMock: URLOpenerServiceProtocol {
+    var isError: Bool = false
     var openedUrl: URL? = nil
     
-    func open(_ url: URL) {
+    func open(_ url: URL) throws {
+        guard !isError else {
+            throw URLError(.badURL)
+        }
         openedUrl = url
     }
 }
@@ -35,7 +39,7 @@ class URLServiceMock: UrlServiceProtocol {
     var urlToReturn: URL? = URL(string: "https://example.com")
       var receivedLat: Double?
       var receivedLong: Double?
-    
+
     func getWikiUrl(lat: Double, long: Double) -> URL? {
         receivedLat = lat
         receivedLong = long
