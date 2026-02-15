@@ -1,7 +1,5 @@
-struct Location: Codable, Identifiable {
-    var id: String {
-        "\(lat)\(long)"
-    }
+struct Location: Decodable, Identifiable, Hashable {
+    var id: Self { self }
     
     let name: String?
     let lat: Double

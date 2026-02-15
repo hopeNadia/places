@@ -1,3 +1,3 @@
-struct Response: Decodable {
+struct LocationsResponse: Decodable {
     let locations: [Location]
 }

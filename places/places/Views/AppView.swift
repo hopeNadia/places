@@ -5,8 +5,8 @@ struct AppView: View {
         VStack {
             LocationListView(
                 viewModel: LocationsViewModel(
-                    locationService: LocationService(),
-                    urlService: UrlService()
+                    locationService: DependencyContainer.shared.resolve(LocationServiceProtocol.self),
+                    urlService: DependencyContainer.shared.resolve(UrlServiceProtocol.self),
                 )
             )
         }
